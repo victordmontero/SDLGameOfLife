@@ -8,3 +8,6 @@
     - Press "P" or "Pause/Break" for pause it.
     - Press "G" to see the grid.
     - Press "Escape" to exit.
+
+
+You can click on any cell (square) to make a cell alive.

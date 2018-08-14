@@ -11,12 +11,6 @@ workspace("SDLGameOfLife")
 
 		files({"**.h","**.cpp","**.lua"})
 
-		links({
-			"Mingw32",
-			"SDL2main",
-			"SDL2"
-		})
-
         filter("configurations:Debug")
             defines({"DEBUG"})
             symbols("On")
