@@ -1,4 +1,4 @@
-require("cmake")
+-- require("cmake")
 
 workspace("SDLGameOfLife")
 	configurations({"Debug","Release"})
