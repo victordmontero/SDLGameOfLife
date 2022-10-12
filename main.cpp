@@ -72,11 +72,12 @@ int main(int args, char **argv)
 
     SetCells();
 
-    cells[((WIDTH / 2) / SQUARE_W) - 1][((HEIGHT / 2) / SQUARE_W) - 1].currentState = 1;
-    cells[(WIDTH / 2) / SQUARE_W][((HEIGHT / 2) / SQUARE_W) - 1].currentState = 1;
-    cells[(WIDTH / 2) / SQUARE_W][(HEIGHT / 2) / SQUARE_W].currentState = 1;
-    cells[((WIDTH / 2) / SQUARE_W) + 1][(HEIGHT / 2) / SQUARE_W].currentState = 1;
+    //Test Glider
+    cells[((WIDTH / 2) / SQUARE_W) - 1][(HEIGHT / 2) / SQUARE_W].currentState = 1;
+    cells[((WIDTH / 2) / SQUARE_W) + 1][((HEIGHT / 2) / SQUARE_W) - 1].currentState = 1;
     cells[(WIDTH / 2) / SQUARE_W][((HEIGHT / 2) / SQUARE_W) + 1].currentState = 1;
+    cells[((WIDTH / 2) / SQUARE_W) + 1][(HEIGHT / 2) / SQUARE_W].currentState = 1;
+    cells[((WIDTH / 2) / SQUARE_W) + 1][((HEIGHT / 2) / SQUARE_W) + 1].currentState = 1;
 
     while (isRunning)
     {
