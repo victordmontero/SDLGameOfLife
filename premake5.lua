@@ -1,23 +1,19 @@
-require("cmake")
+-- require("cmake")
 
 workspace("SDLGameOfLife")
 	configurations({"Debug","Release"})
-	platforms ({"Windows","WindowsMingw32","Linux"})
+	platforms ({"Windows","Mingw32","Linux"})
 		
 	project("SDLGameOfLife")
 		kind("ConsoleApp")
 		language("C++")
 		targetdir("bin/%{cfg.buildcfg}")
 
-		-- includedirs({
-		-- 	"../SDL2-2.0.9/include"
-		-- })
-
-		-- libdirs({
-		-- 	"../SDL2-2.0.9/lib/x86"
-		-- })
-
-		files({"**.h","**.cpp","**.lua"})
+		files({
+			"**.h",
+			"**.cpp",
+			"**.lua"
+		})
 
         filter("configurations:Debug")
             defines({"DEBUG"})
@@ -42,26 +38,16 @@ workspace("SDLGameOfLife")
 				"SDL2"
 			})
 		
-		filter("platforms:WindowsMingw32")
+		filter("platforms:Mingw32")
             defines({"WINDOWS"})
 			system("windows")
-			includedirs({
-				"../SDL2-2.0.9/include"
-			})
-	
-			libdirs({
-				"../SDL2-2.0.9/lib/x86"
-			})
-			links({
-				"Mingw32",
-				"SDL2main",
-				"SDL2"
-			})
+			buildoptions{"`sdl2-config --cflags`"}
+			linkoptions{"-static","`sdl2-config --static-libs`"}
+			
 
 		filter("platforms:Linux")
             defines({"LINUX"})
 			system("linux")
-			links({
-				"SDL2main",
-				"SDL2"
-			})
+			buildoptions{"`sdl2-config --cflags`"}
+			linkoptions{"`sdl2-config --libs`"}
+
