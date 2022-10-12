@@ -81,7 +81,6 @@ int main(int args, char **argv)
 
     while (isRunning)
     {
-
         SDL_Event e;
         while (SDL_PollEvent(&e))
         {
@@ -104,18 +103,21 @@ int main(int args, char **argv)
 
             if (e.type == SDL_MOUSEBUTTONDOWN)
             {
+                const size_t squares_w = WIDTH / SQUARE_W;
+                const size_t squares_h = HEIGHT / SQUARE_W;
+
                 int mouseX = e.button.x;
                 int mouseY = e.button.y;
 
-                for (unsigned i = 0; i < WIDTH / SQUARE_W; i++)
+                for (size_t i = 0; i < squares_w; i++)
                 {
-
-                    for (unsigned j = 0; j < HEIGHT / SQUARE_W; j++)
+                    for (size_t j = 0; j < squares_h; j++)
                     {
-                        if (mouseX >= cells[i][j].rect.x && mouseX <= cells[i][j].rect.x + SQUARE_W &&
-                            mouseY >= cells[i][j].rect.y && mouseY <= cells[i][j].rect.y + SQUARE_W)
+                        Cell& current_cell = cells[i % squares_w][j % squares_h];
+                        if (mouseX >= current_cell.rect.x && mouseX <= current_cell.rect.x + SQUARE_W &&
+                            mouseY >= current_cell.rect.y && mouseY <= current_cell.rect.y + SQUARE_W)
                         {
-                            cells[i][j].currentState = cells[i][j].currentState == 1 ? 0 : 1;
+                            current_cell.currentState = current_cell.currentState != 1;
                         }
                     }
                 }
@@ -145,34 +147,37 @@ int main(int args, char **argv)
 
 void CheckRules()
 {
-
-    for (int x = 0; x < WIDTH / SQUARE_W; x++)
+    const size_t squares_w = WIDTH / SQUARE_W;
+    const size_t squares_h = HEIGHT / SQUARE_W;
+    
+    for (size_t x = 0; x < squares_w; x++)
     {
-
-        for (int y = 0; y < HEIGHT / SQUARE_W; y++)
+        for (size_t y = 0; y < squares_h; y++)
         {
-            int livingCells = 0;
+            size_t livingCells = 0;
 
-            livingCells += x - 1 < 0 || y - 1 < 0 ? 0 : cells[x - 1][y - 1].currentState;
-            livingCells += y - 1 < 0 ? 0 : cells[x][y - 1].currentState;
-            livingCells += x + 1 > WIDTH || y - 1 < 0 ? 0 : cells[x + 1][y - 1].currentState;
-            livingCells += x - 1 < 0 ? 0 : cells[x - 1][y].currentState;
-            livingCells += x + 1 > WIDTH ? 0 : cells[x + 1][y].currentState;
-            livingCells += x - 1 < 0 || y + 1 > HEIGHT ? 0 : cells[x - 1][y + 1].currentState;
-            livingCells += y + 1 > HEIGHT ? 0 : cells[x][y + 1].currentState;
-            livingCells += x + 1 > WIDTH || y + 1 > HEIGHT ? 0 : cells[x + 1][y + 1].currentState;
+            livingCells += cells[(x - 1) % squares_w][(y - 1) % squares_h].currentState;
+            livingCells += cells[x % squares_w][(y - 1) % squares_h].currentState;
+            livingCells += cells[(x + 1) % squares_w][(y - 1) % squares_h].currentState;
+            livingCells += cells[(x - 1) % squares_w][y % squares_h].currentState;
+            livingCells += cells[(x + 1) % squares_w][y % squares_h].currentState;
+            livingCells += cells[(x - 1) % squares_w][(y + 1) % squares_h].currentState;
+            livingCells += cells[x % squares_w][(y + 1) % squares_h].currentState;
+            livingCells += cells[(x + 1) % squares_w][(y + 1) % squares_h].currentState;
 
-            if (cells[x][y].currentState == 1 && (livingCells > 1 && livingCells < 4))
+            Cell& current_cell = cells[x % squares_w][y % squares_h];
+
+            if (current_cell.currentState == 1 && (livingCells > 1 && livingCells < 4))
             {
-                cells[x][y].nextGeneration = 1;
+                current_cell.nextGeneration = 1;
             }
-            else if (cells[x][y].currentState == 0 && livingCells == 3)
+            else if (current_cell.currentState == 0 && livingCells == 3)
             {
-                cells[x][y].nextGeneration = 1;
+                current_cell.nextGeneration = 1;
             }
             else
             {
-                cells[x][y].nextGeneration = 0;
+                current_cell.nextGeneration = 0;
             }
         }
     }
@@ -180,12 +185,15 @@ void CheckRules()
 
 void Draw()
 {
+    const size_t squares_w = WIDTH / SQUARE_W;
+    const size_t squares_h = HEIGHT / SQUARE_W;
 
-    for (int x = 0; x < WIDTH / SQUARE_W; x++)
+    for (int x = 0; x < squares_w; x++)
     {
-        for (int y = 0; y < HEIGHT / SQUARE_W; y++)
+        for (int y = 0; y < squares_h; y++)
         {
-            if (cells[x][y].currentState == 1)
+            Cell& current_cell = cells[x % squares_w][y % squares_h];
+            if (current_cell.currentState == 1)
             {
                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
             }
@@ -194,35 +202,42 @@ void Draw()
                 SDL_SetRenderDrawColor(renderer, R, 0, R, 0);
             }
 
-            SDL_RenderFillRect(renderer, &cells[x][y].rect);
+            SDL_RenderFillRect(renderer, &current_cell.rect);
         }
     }
 }
 
 void SetCells()
 {
-    for (int x = 0; x < WIDTH / SQUARE_W; x++)
-    {
-        for (int y = 0; y < HEIGHT / SQUARE_W; y++)
-        {
-            cells[x][y].rect.w = cells[x][y].rect.h = SQUARE_W - 1;
-            cells[x][y].rect.x = x * SQUARE_W;
-            cells[x][y].rect.y = y * SQUARE_W;
+    const size_t squares_w = WIDTH / SQUARE_W;
+    const size_t squares_h = HEIGHT / SQUARE_W;
 
-            cells[x][y].currentState = 0;
+    for (size_t x = 0; x < squares_w; x++)
+    {
+        for (size_t y = 0; y < squares_h; y++)
+        {
+            Cell& current_cell = cells[x % squares_w][y % squares_h];
+            current_cell.rect.w = current_cell.rect.h = SQUARE_W - 1;
+            current_cell.rect.x = x * SQUARE_W;
+            current_cell.rect.y = y * SQUARE_W;
+
+            current_cell.currentState = 0;
         }
     }
 }
 
 void UpdateCurrent()
 {
+    const size_t squares_w = WIDTH / SQUARE_W;
+    const size_t squares_h = HEIGHT / SQUARE_W;
 
-    for (int x = 0; x < WIDTH / SQUARE_W; x++)
+    for (int x = 0; x < squares_w; x++)
     {
-        for (int y = 0; y < HEIGHT / SQUARE_W; y++)
+        for (int y = 0; y < squares_h; y++)
         {
-            cells[x][y].currentState = cells[x][y].nextGeneration;
-            cells[x][y].nextGeneration = 0;
+            Cell& current_cell = cells[x % squares_w][y % squares_h];
+            current_cell.currentState = current_cell.nextGeneration;
+            current_cell.nextGeneration = 0;
         }
     }
 }
