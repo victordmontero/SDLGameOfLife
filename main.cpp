@@ -103,8 +103,8 @@ int main(int args, char **argv)
 
             if (e.type == SDL_MOUSEBUTTONDOWN)
             {
-                const size_t squares_w = WIDTH / SQUARE_W;
-                const size_t squares_h = HEIGHT / SQUARE_W;
+                constexpr size_t squares_w = WIDTH / SQUARE_W;
+                constexpr size_t squares_h = HEIGHT / SQUARE_W;
 
                 int mouseX = e.button.x;
                 int mouseY = e.button.y;
@@ -147,8 +147,8 @@ int main(int args, char **argv)
 
 void CheckRules()
 {
-    const size_t squares_w = WIDTH / SQUARE_W;
-    const size_t squares_h = HEIGHT / SQUARE_W;
+    constexpr size_t squares_w = WIDTH / SQUARE_W;
+    constexpr size_t squares_h = HEIGHT / SQUARE_W;
     
     for (size_t x = 0; x < squares_w; x++)
     {
@@ -185,8 +185,8 @@ void CheckRules()
 
 void Draw()
 {
-    const size_t squares_w = WIDTH / SQUARE_W;
-    const size_t squares_h = HEIGHT / SQUARE_W;
+    constexpr size_t squares_w = WIDTH / SQUARE_W;
+    constexpr size_t squares_h = HEIGHT / SQUARE_W;
 
     for (int x = 0; x < squares_w; x++)
     {
@@ -209,8 +209,8 @@ void Draw()
 
 void SetCells()
 {
-    const size_t squares_w = WIDTH / SQUARE_W;
-    const size_t squares_h = HEIGHT / SQUARE_W;
+    constexpr size_t squares_w = WIDTH / SQUARE_W;
+    constexpr size_t squares_h = HEIGHT / SQUARE_W;
 
     for (size_t x = 0; x < squares_w; x++)
     {
@@ -228,8 +228,8 @@ void SetCells()
 
 void UpdateCurrent()
 {
-    const size_t squares_w = WIDTH / SQUARE_W;
-    const size_t squares_h = HEIGHT / SQUARE_W;
+    constexpr size_t squares_w = WIDTH / SQUARE_W;
+    constexpr size_t squares_h = HEIGHT / SQUARE_W;
 
     for (int x = 0; x < squares_w; x++)
     {
