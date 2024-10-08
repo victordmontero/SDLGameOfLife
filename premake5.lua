@@ -10,44 +10,87 @@ workspace("SDLGameOfLife")
 		targetdir("bin/%{cfg.buildcfg}")
 
 		files({
-			"**.h",
-			"**.cpp",
+			"main.cpp",
 			"**.lua"
 		})
 
-        filter("configurations:Debug")
-            defines({"DEBUG"})
-            symbols("On")
+		includedirs({
+      "depend/sdl/build/include",
+      "depend/sdl/include"
+    })
 
-        filter("configurations:Release")
-            defines({"NDEBUG"})
-			optimize("On")
+    libdirs {
+      "depend/sdl/build"
+    }
+
+    filter("configurations:Debug")
+     defines({"DEBUG"})
+     symbols("On")
+     targetsuffix("d")
+
+    filter("configurations:Release")
+      defines({"NDEBUG"})
+      optimize("On")
 			
 		filter("platforms:Windows")
-            defines({"WINDOWS"})
+      defines({"WINDOWS"})
 			system("windows")
-			includedirs({
-				"../SDL2-2.0.9/include"
-			})
+			--includedirs({
+			--	"../SDL2-2.0.9/include"
+			--})
 	
-			libdirs({
-				"../SDL2-2.0.9/lib/x86"
-			})
+			--libdirs({
+			--	"../SDL2-2.0.9/lib/x86"
+			--})
 			links({
+        "SDL2lib",
 				"SDL2main",
 				"SDL2"
 			})
 		
 		filter("platforms:Mingw32")
-            defines({"WINDOWS"})
+      defines({"WINDOWS"})
 			system("windows")
 			buildoptions{"`sdl2-config --cflags`"}
 			linkoptions{"-static","`sdl2-config --static-libs`"}
 			
 
 		filter("platforms:Linux")
-            defines({"LINUX"})
+      defines({"LINUX"})
 			system("linux")
-			buildoptions{"`sdl2-config --cflags`"}
-			linkoptions{"`sdl2-config --libs`"}
 
+      links {
+        "SDL2lib",
+				"SDL2main%{cfg.linktarget.suffix}",
+        "SDL2%{cfg.linktarget.suffix}"
+      }
+
+      libdirs {
+        "depend/sdl/build"
+      }
+
+  project "SDL2lib"
+     kind "Makefile"
+     objdir()
+   
+     location("depend/sdl")
+     --includedirs{"./include"}
+     --targetname "SDL2"
+		 targetdir "%{prj.location}/build"
+
+     cleancommands {
+	     "{RMDIR} %{prj.location}/build/"
+     }
+   
+    buildcommands {
+      "cmake -DCMAKE_BUILD_TYPE=%{cfg.buildcfg} %{prj.location} -B %{cfg.targetdir}",
+	    "cmake --build %{cfg.targetdir} --config %{cfg.buildcfg} --parallel $(nproc --ignore=1)"
+
+    }
+   
+    rebuildcommands {
+	    "{RMDIR} %{prj.location}/build/",
+      "cmake -DCMAKE_BUILD_TYPE=%{cfg.buildcfg} %{prj.location} -B %{cfg.targetdir}",
+	    "cmake --build %{cfg.targetdir} --config %{cfg.buildcfg} --parallel $(nproc --ignore=1)"
+ 
+    }

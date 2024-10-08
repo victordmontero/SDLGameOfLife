@@ -7,7 +7,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #define WIDTH 800
 #define HEIGHT 600
